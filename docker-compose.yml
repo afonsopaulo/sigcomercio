@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   comercio-app:
-    build: .
+    build:
+      context: .
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
     container_name: sigcomercio
     ports:
       - "4001:80"
