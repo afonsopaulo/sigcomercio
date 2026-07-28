@@ -5,8 +5,8 @@ services:
     build:
       context: .
       args:
-        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_SUPABASE_URL: https://llcsurlorwkvfmbtptko.supabase.co
+        VITE_SUPABASE_ANON_KEY: sb_publishable_TxwQEid06MuHHFVVd8ZhGw_z1PNGSTE
     container_name: sigcomercio
     ports:
       - "4001:80"
