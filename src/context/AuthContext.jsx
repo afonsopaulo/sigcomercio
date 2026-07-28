@@ -35,7 +35,9 @@ export const AuthProvider = ({ children }) => {
   // --- MÉTODOS DE AUTENTICAÇÃO ---
   const login = async (username, password) => {
     try {
-      const loggedUser = authService.login(username, password);
+      // O login no Supabase é assíncrono; aguardar a resposta garante que
+      // o cargo retornado pelo banco (admin/employee) seja salvo na sessão.
+      const loggedUser = await authService.login(username, password);
       setUser(loggedUser);
       addToast(`Bem-vindo de volta, ${loggedUser.name}!`, 'success');
       return loggedUser;
