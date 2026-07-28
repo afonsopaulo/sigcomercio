@@ -31,9 +31,9 @@ export const Header = ({ currentPage, setMobileOpen, mobileOpen }) => {
   };
 
   // Carrega produtos com estoque baixo para a barra de notificação
-  const checkStockAlerts = () => {
+  const checkStockAlerts = async () => {
     try {
-      const products = dbService.getProducts();
+      const products = await dbService.getProducts();
       const lowStock = products.filter(p => p.stock <= p.minStock);
       setLowStockProducts(lowStock);
     } catch (e) {

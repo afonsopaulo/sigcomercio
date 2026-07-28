@@ -23,6 +23,9 @@ export const Reports = () => {
   
   // Filtros de período: 'today' | '7days' | '30days' | 'all'
   const [period, setPeriod] = useState('30days');
+  const todayInput = new Date().toLocaleDateString('en-CA');
+  const [customStartDate, setCustomStartDate] = useState(todayInput);
+  const [customEndDate, setCustomEndDate] = useState(todayInput);
   const [searchTerm, setSearchTerm] = useState('');
   
   // Estados de dados consolidados
@@ -45,10 +48,8 @@ export const Reports = () => {
   const [paymentAmount, setPaymentAmount] = useState('');
 
   // Carrega e consolida dados com base no período selecionado
-  const loadReportData = () => {
-    const allProducts = dbService.getProducts();
-    const allSales = dbService.getSales();
-    const allClients = dbService.getClients();
+  const loadReportData = async () => {
+    const [allProducts, allSales, allClients] = await Promise.all([dbService.getProducts(), dbService.getSales(), dbService.getClients()]);
     
     // 1. Filtrar vendas pelo período
     const now = new Date();
@@ -60,13 +61,19 @@ export const Reports = () => {
       startDate.setDate(now.getDate() - 7);
     } else if (period === '30days') {
       startDate.setDate(now.getDate() - 30);
+    } else if (period === 'custom') {
+      startDate = customStartDate ? new Date(`${customStartDate}T00:00:00`) : new Date(0);
     } else {
       startDate = new Date(0); // All time
     }
 
+    const endDate = period === 'custom' && customEndDate
+      ? new Date(`${customEndDate}T23:59:59.999`)
+      : null;
+
     const periodSales = allSales.filter(sale => {
       const saleDate = new Date(sale.date);
-      return saleDate >= startDate;
+      return saleDate >= startDate && (!endDate || saleDate <= endDate);
     });
 
     // 2. Calcular Métricas Financeiras
@@ -173,7 +180,7 @@ export const Reports = () => {
 
   useEffect(() => {
     loadReportData();
-  }, [period]);
+  }, [period, customStartDate, customEndDate]);
 
   // Exportar logs de vendas para arquivo CSV
   const handleExportCSV = () => {
@@ -223,7 +230,7 @@ export const Reports = () => {
   });
 
   // Executar quitação rápida de débito
-  const handleQuickAmortize = (e) => {
+  const handleQuickAmortize = async (e) => {
     e.preventDefault();
     if (!selectedDebtor) return;
     
@@ -233,7 +240,7 @@ export const Reports = () => {
       return;
     }
 
-    const updated = dbService.payClientDebt(selectedDebtor.id, amount, `${user?.name} (Relatório)`);
+    const updated = await dbService.payClientDebt(selectedDebtor.id, amount, `${user?.name} (Relatório)`);
     if (updated) {
       addToast(`Amortização de R$ ${amount.toFixed(2)} registrada para ${selectedDebtor.name}.`, 'success');
       setSelectedDebtor(null);
@@ -265,12 +272,14 @@ export const Reports = () => {
         </div>
 
         {/* Seleção de Período */}
-        <div style={{ display: 'flex', gap: '0.5rem', backgroundColor: 'var(--bg-input)', padding: '4px', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', backgroundColor: 'var(--bg-input)', padding: '4px', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-color)' }}>
           {[
             { id: 'today', label: 'Hoje' },
             { id: '7days', label: '7 Dias' },
             { id: '30days', label: '30 Dias' },
-            { id: 'all', label: 'Tudo' }
+            { id: 'all', label: 'Tudo' },
+            { id: 'custom', label: 'Personalizado' }
           ].map(p => (
             <button
               key={p.id}
@@ -289,6 +298,17 @@ export const Reports = () => {
               {p.label}
             </button>
           ))}
+          </div>
+          {period === 'custom' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '4px 0', fontSize: '0.8rem' }}>
+              <label style={{ color: 'var(--text-secondary)' }}>
+                De <input type="date" value={customStartDate} max={customEndDate || undefined} onChange={e => setCustomStartDate(e.target.value)} style={{ marginLeft: '0.3rem' }} />
+              </label>
+              <label style={{ color: 'var(--text-secondary)' }}>
+                Até <input type="date" value={customEndDate} min={customStartDate || undefined} onChange={e => setCustomEndDate(e.target.value)} style={{ marginLeft: '0.3rem' }} />
+              </label>
+            </div>
+          )}
         </div>
       </div>
 

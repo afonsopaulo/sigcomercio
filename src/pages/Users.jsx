@@ -33,9 +33,9 @@ export const Users = () => {
     role: 'employee'
   });
 
-  const loadUsers = () => {
+  const loadUsers = async () => {
     try {
-      const allUsers = dbService.getUsers();
+      const allUsers = await dbService.getUsers();
       setUsersList(allUsers);
     } catch (err) {
       addToast('Erro ao carregar usuários.', 'error');
@@ -60,7 +60,7 @@ export const Users = () => {
   };
 
   // Enviar formulário de adição de usuário
-  const handleAddUser = (e) => {
+  const handleAddUser = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.username.trim() || !formData.password.trim()) {
       addToast('Todos os campos são de preenchimento obrigatório.', 'warning');
@@ -68,7 +68,7 @@ export const Users = () => {
     }
 
     try {
-      dbService.addUser({
+      await dbService.addUser({
         name: formData.name.trim(),
         username: formData.username.trim().toLowerCase(),
         password: formData.password,
@@ -88,21 +88,21 @@ export const Users = () => {
     setFormData({
       name: u.name,
       username: u.username,
-      password: u.password,
+      password: '',
       role: u.role
     });
   };
 
   // Enviar formulário de edição de usuário
-  const handleEditUser = (e) => {
+  const handleEditUser = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.username.trim() || !formData.password.trim()) {
-      addToast('Todos os campos devem ser preenchidos.', 'warning');
+    if (!formData.name.trim() || !formData.username.trim()) {
+      addToast('Nome e login são obrigatórios.', 'warning');
       return;
     }
 
     try {
-      dbService.updateUser(editingUser.id, {
+      await dbService.updateUser(editingUser.id, {
         name: formData.name.trim(),
         username: formData.username.trim().toLowerCase(),
         password: formData.password,
@@ -117,7 +117,7 @@ export const Users = () => {
   };
 
   // Enviar confirmação de exclusão
-  const handleDeleteUser = () => {
+  const handleDeleteUser = async () => {
     if (!deletingUser) return;
     
     // Bloquear auto-exclusão do próprio usuário logado por engano
@@ -128,7 +128,7 @@ export const Users = () => {
     }
 
     try {
-      dbService.deleteUser(deletingUser.id);
+      await dbService.deleteUser(deletingUser.id);
       addToast('Operador excluído com sucesso do sistema.', 'success');
       loadUsers();
       closeModals();

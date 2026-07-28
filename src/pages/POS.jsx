@@ -37,9 +37,10 @@ export const POS = () => {
   const searchInputRef = useRef(null);
 
   // Carrega produtos e clientes
-  const loadData = () => {
-    setProducts(dbService.getProducts());
-    setClients(dbService.getClients());
+  const loadData = async () => {
+    const [loadedProducts, loadedClients] = await Promise.all([dbService.getProducts(), dbService.getClients()]);
+    setProducts(loadedProducts);
+    setClients(loadedClients);
   };
 
   useEffect(() => {
@@ -150,7 +151,7 @@ export const POS = () => {
   const finalTotal = parseFloat(Math.max(0, subtotal - discount).toFixed(2));
 
   // --- FECHAMENTO DA VENDA ---
-  const handleFinalizeSale = () => {
+  const handleFinalizeSale = async () => {
     if (cart.length === 0) {
       addToast('O carrinho está vazio!', 'error');
       return;
@@ -180,8 +181,7 @@ export const POS = () => {
     };
 
     try {
-      // Grava no localStorage e processa estoque/fiado
-      const finalized = dbService.addSale(salePayload, user.name);
+      const finalized = await dbService.addSale(salePayload, user.name);
 
       // Cria cupom para exibição
       setActiveReceipt({

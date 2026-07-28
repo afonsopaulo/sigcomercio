@@ -44,9 +44,10 @@ export const Clients = () => {
     address: ''
   });
 
-  const loadData = () => {
-    setClients(dbService.getClients());
-    setSales(dbService.getSales());
+  const loadData = async () => {
+    const [loadedClients, loadedSales] = await Promise.all([dbService.getClients(), dbService.getSales()]);
+    setClients(loadedClients);
+    setSales(loadedSales);
   };
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export const Clients = () => {
     setIsFormModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
 
@@ -90,10 +91,10 @@ export const Clients = () => {
 
     try {
       if (editingClient) {
-        dbService.updateClient(editingClient.id, payload);
+        await dbService.updateClient(editingClient.id, { ...editingClient, ...payload });
         addToast(`Cliente "${payload.name}" atualizado com sucesso!`, 'success');
       } else {
-        dbService.addClient(payload);
+        await dbService.addClient(payload);
         addToast(`Cliente "${payload.name}" cadastrado com sucesso!`, 'success');
       }
       setIsFormModalOpen(false);
@@ -114,9 +115,9 @@ export const Clients = () => {
     setDeleteTarget(client);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteTarget) {
-      dbService.deleteClient(deleteTarget.id);
+      await dbService.deleteClient(deleteTarget.id);
       addToast(`Cliente "${deleteTarget.name}" removido com sucesso.`, 'info');
       setDeleteTarget(null);
       
@@ -133,7 +134,7 @@ export const Clients = () => {
     setIsPaymentModalOpen(true);
   };
 
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     const amount = parseFloat(paymentAmount);
     
@@ -148,7 +149,7 @@ export const Clients = () => {
     }
 
     try {
-      const updatedClient = dbService.payClientDebt(viewingClient.id, amount, user.name);
+      const updatedClient = await dbService.payClientDebt(viewingClient.id, amount, user.name);
       addToast(`Recebido R$ ${amount.toFixed(2)} de ${viewingClient.name}. Saldo devedor atualizado!`, 'success');
       
       setIsPaymentModalOpen(false);

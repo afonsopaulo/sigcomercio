@@ -58,8 +58,8 @@ export const Products = () => {
     imageFileBase64: ''
   });
 
-  const loadProducts = () => {
-    const list = dbService.getProducts();
+  const loadProducts = async () => {
+    const list = await dbService.getProducts();
     setProducts(list);
   };
 
@@ -153,7 +153,7 @@ export const Products = () => {
   };
 
   // Envio do formulário
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validações básicas de negócio
@@ -184,10 +184,10 @@ export const Products = () => {
 
     try {
       if (editingProduct) {
-        dbService.updateProduct(editingProduct.id, productPayload);
+        await dbService.updateProduct(editingProduct.id, productPayload);
         addToast(`Produto "${productPayload.name}" editado com sucesso!`, 'success');
       } else {
-        dbService.addProduct(productPayload);
+        await dbService.addProduct(productPayload);
         addToast(`Produto "${productPayload.name}" cadastrado com sucesso!`, 'success');
       }
       setIsModalOpen(false);
@@ -203,9 +203,9 @@ export const Products = () => {
   };
 
   // Confirma exclusão
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteTarget) {
-      dbService.deleteProduct(deleteTarget.id);
+      await dbService.deleteProduct(deleteTarget.id);
       addToast(`Produto "${deleteTarget.name}" removido com sucesso.`, 'info');
       setDeleteTarget(null);
       loadProducts();
@@ -213,8 +213,8 @@ export const Products = () => {
   };
 
   // Limpar todos os produtos
-  const handleClearAll = () => {
-    dbService.clearAllProducts();
+  const handleClearAll = async () => {
+    await dbService.clearAllProducts();
     addToast('Todos os produtos foram removidos.', 'info');
     setShowClearAllConfirm(false);
     loadProducts();

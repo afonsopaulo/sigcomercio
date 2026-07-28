@@ -1,4 +1,4 @@
-import { dbService } from './db';
+import { supabase } from './db';
 
 const SESSION_KEY = 'sigcomercio_active_session';
 
@@ -9,15 +9,11 @@ export const authService = {
    * @param {string} password 
    * @returns {Object} Usuário logado
    */
-  login(username, password) {
-    dbService.init(); // Garante inicialização
-    const users = dbService.getUsers();
-    
-    // Procura usuário correspondente
-    const user = users.find(
-      u => u.username.toLowerCase() === username.trim().toLowerCase() && 
-           u.password === password
-    );
+  async login(username, password) {
+    if (!supabase) throw new Error('Supabase não configurado.');
+    const { data, error } = await supabase.rpc('verify_app_login', { p_username: username, p_password: password });
+    if (error) throw error;
+    const user = data?.[0];
 
     if (!user) {
       throw new Error('Usuário ou senha incorretos.');

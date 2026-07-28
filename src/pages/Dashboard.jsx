@@ -37,10 +37,8 @@ export const Dashboard = ({ setCurrentPage }) => {
 
   useEffect(() => {
     // Executa cálculos consolidados do Dashboard
-    const loadDashboardData = () => {
-      const allProducts = dbService.getProducts();
-      const allSales = dbService.getSales();
-      const allClients = dbService.getClients();
+    const loadDashboardData = async () => {
+      const [allProducts, allSales, allClients] = await Promise.all([dbService.getProducts(), dbService.getSales(), dbService.getClients()]);
       
       const todayStr = new Date().toDateString();
       
@@ -183,8 +181,8 @@ export const Dashboard = ({ setCurrentPage }) => {
   const chartData = renderLineChartPath();
 
   // Limpar todos os dados do sistema
-  const handleClearAllData = () => {
-    dbService.clearAllData();
+  const handleClearAllData = async () => {
+    await dbService.clearAllData();
     addToast('Todos os dados foram removidos. Sistema zerado.', 'info');
     setShowClearAllConfirm(false);
     // Recarrega os dados do dashboard

@@ -1,16 +1,28 @@
-# React + Vite
+# SigComércio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Configurar o Supabase
 
-Currently, two official plugins are available:
+1. Crie um projeto em [Supabase](https://supabase.com/dashboard).
+2. Abra **SQL Editor**, crie uma nova consulta, copie todo o conteúdo de [supabase/schema.sql](./supabase/schema.sql) e clique em **Run**.
+3. Em **Project Settings > API**, copie a **Project URL** e a chave **anon public**.
+4. Copie `.env.example` para um novo arquivo chamado `.env.local` e preencha os dois valores:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```env
+VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+VITE_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
+```
 
-## React Compiler
+5. Reinicie `npm run dev`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+O primeiro acesso criado pelo script é `admin` / `admin123`. Cadastre ou edite os operadores dentro da tela **Usuários** e altere essa senha logo após o primeiro acesso.
 
-## Expanding the ESLint configuration
+O banco armazena produtos, clientes, vendas, itens das vendas e movimentações de estoque. O fechamento de venda é feito por uma função única no banco, garantindo que venda, baixa de estoque e fiado sejam gravados juntos.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+> Esta é uma conexão simples para uso interno. Como ainda não há Supabase Auth, as políticas permitem o acesso com a chave pública do projeto. Para disponibilizar o sistema a pessoas externas, a próxima evolução recomendada é autenticar cada operador com Supabase Auth e restringir as políticas por usuário/loja.
+
+## Desenvolvimento
+
+```bash
+npm install
+npm run dev
+```

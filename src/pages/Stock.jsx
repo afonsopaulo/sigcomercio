@@ -31,10 +31,11 @@ export const Stock = () => {
     motive: 'Compra de Fornecedor'
   });
 
-  const loadData = () => {
-    setProducts(dbService.getProducts());
+  const loadData = async () => {
+    const loadedProducts = await dbService.getProducts();
+    setProducts(loadedProducts);
     // Classifica as movimentações por data decrescente (mais recentes primeiro)
-    const allMovements = dbService.getStockMovements();
+    const allMovements = await dbService.getStockMovements();
     const sorted = [...allMovements].sort((a, b) => new Date(b.date) - new Date(a.date));
     setMovements(sorted);
   };
@@ -44,8 +45,8 @@ export const Stock = () => {
   }, []);
 
   // Handler para abrir modal de ajuste rápido
-  const handleOpenAdjust = () => {
-    const prods = dbService.getProducts();
+  const handleOpenAdjust = async () => {
+    const prods = await dbService.getProducts();
     setAdjustForm({
       productId: prods[0]?.id || '',
       type: 'input',
@@ -64,7 +65,7 @@ export const Stock = () => {
     }));
   };
 
-  const handleAdjustSubmit = (e) => {
+  const handleAdjustSubmit = async (e) => {
     e.preventDefault();
     const qty = parseInt(adjustForm.quantity);
     if (isNaN(qty) || qty <= 0) {
@@ -90,13 +91,13 @@ export const Stock = () => {
 
     try {
       // 1. Atualiza produto
-      dbService.updateProduct(prod.id, {
+      await dbService.updateProduct(prod.id, {
         ...prod,
         stock: updatedStock
-      });
+      }, false);
 
       // 2. Registra a movimentação no histórico
-      dbService.addStockMovement({
+      await dbService.addStockMovement({
         productId: prod.id,
         productName: prod.name,
         quantity: qty,
