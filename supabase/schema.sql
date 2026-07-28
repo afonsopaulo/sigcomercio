@@ -187,6 +187,6 @@ create policy "app access" on public.sale_items for select to anon using (true);
 create policy "app access" on public.stock_movements for all to anon using (true) with check (true);
 grant execute on function public.create_app_user(text,text,text,text), public.verify_app_login(text,text), public.list_app_users(), public.update_app_user(uuid,text,text,text,text), public.delete_app_user(uuid), public.register_sale(jsonb,text), public.pay_client_debt(uuid,numeric,text) to anon;
 
--- Primeiro acesso: usuário admin / senha admin123. Troque a senha após entrar.
-select public.create_app_user('admin', 'admin123', 'Administrador', 'admin')
-where not exists (select 1 from public.app_users where username = 'admin');
+-- Primeiro acesso administrador.
+select public.create_app_user('afonsopaulo755@gmail.com', '1233219898', 'Afonso Paulo', 'admin')
+where not exists (select 1 from public.app_users where username = 'afonsopaulo755@gmail.com');

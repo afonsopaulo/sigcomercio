@@ -14,7 +14,7 @@ VITE_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
 
 5. Reinicie `npm run dev`.
 
-O primeiro acesso criado pelo script é `admin` / `admin123`. Cadastre ou edite os operadores dentro da tela **Usuários** e altere essa senha logo após o primeiro acesso.
+O primeiro acesso criado pelo script é `afonsopaulo755@gmail.com` / `1233219898`. Cadastre ou edite os operadores dentro da tela **Usuários** e altere essa senha logo após o primeiro acesso.
 
 O banco armazena produtos, clientes, vendas, itens das vendas e movimentações de estoque. O fechamento de venda é feito por uma função única no banco, garantindo que venda, baixa de estoque e fiado sejam gravados juntos.
 
