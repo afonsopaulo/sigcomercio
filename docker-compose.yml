@@ -5,7 +5,7 @@ services:
     build: .
     container_name: sigcomercio
     ports:
-      - "8080:80"
+      - "4001:80"
     restart: unless-stopped
     networks:
       - web
